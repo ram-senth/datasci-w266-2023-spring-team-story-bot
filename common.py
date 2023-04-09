@@ -14,54 +14,68 @@ VAL_SAMPLES = 10000
 
 def create_configs(project_base_path, t5_trainer_provider, t5_datasets_provider, opt_trainer_provider, opt_datasets_provider):
   return {
-      't5_s1': TuningConfig('t5', 'google/t5-v1_1-base', 
+      't5_s1': TuningConfig('t5_s1', 't5', 'google/t5-v1_1-base', 
                   dataset='s1', max_len=65, epochs=3, 
                   training_samples=TRAINING_SAMPLES,
                   val_samples=VAL_SAMPLES, batch_size=128,
                   trainer_provider=t5_trainer_provider,
                   datasets_provider=t5_datasets_provider,
                   prompt=T5_PROMPT, 
-                  project_base_path=project_base_path),
-      't5_s2': TuningConfig('t5', 'google/t5-v1_1-base', 
+                  project_base_path=project_base_path,
+                  tuned=True),
+      't5_s2': TuningConfig('t5_s2', 't5', 'google/t5-v1_1-base', 
                   dataset='s2', max_len=110, epochs=3, 
                   training_samples=TRAINING_SAMPLES,
                   val_samples=VAL_SAMPLES, batch_size=64,
                   trainer_provider=t5_trainer_provider,
                   datasets_provider=t5_datasets_provider,
                   prompt=T5_PROMPT, 
-                  project_base_path=project_base_path),
-      't5_s3': TuningConfig('t5', 'google/t5-v1_1-base', 
+                  project_base_path=project_base_path,
+                  tuned=True),
+      't5_s3': TuningConfig('t5_s3', 't5', 'google/t5-v1_1-base', 
                   dataset='s3', max_len=150, epochs=3, 
                   training_samples=TRAINING_SAMPLES,
                   val_samples=VAL_SAMPLES, batch_size=64,
                   trainer_provider=t5_trainer_provider,
                   datasets_provider=t5_datasets_provider,
                   prompt=T5_PROMPT, 
-                  project_base_path=project_base_path),
-      'opt_s2': TuningConfig('opt', 'facebook/opt-350m', 
+                  project_base_path=project_base_path,
+                  tuned=True),
+      'opt_s2': TuningConfig('opt_s2', 'opt', 'facebook/opt-350m', 
                   dataset='s2', max_len=110, epochs=3, 
                   training_samples=TRAINING_SAMPLES,
                   val_samples=VAL_SAMPLES, batch_size=64,
                   trainer_provider=opt_trainer_provider,
                   datasets_provider=opt_datasets_provider,
                   prompt=OPT_PROMPT, 
-                  project_base_path=project_base_path),
-      'opt_s3': TuningConfig('opt', 'facebook/opt-350m', 
+                  project_base_path=project_base_path,
+                  tuned=True),
+      'opt_s3': TuningConfig('opt_s3', 'opt', 'facebook/opt-350m', 
                   dataset='s3', max_len=150, epochs=3, 
                   training_samples=TRAINING_SAMPLES,
                   val_samples=VAL_SAMPLES, batch_size=64,
                   trainer_provider=opt_trainer_provider,
                   datasets_provider=opt_datasets_provider,
                   prompt=OPT_PROMPT, 
-                  project_base_path=project_base_path),
+                  project_base_path=project_base_path,
+                  tuned=True),
+      'baseline': TuningConfig('baseline', 'opt', 'facebook/opt-350m', 
+                  dataset=None, max_len=150, epochs=3, 
+                  training_samples=TRAINING_SAMPLES,
+                  val_samples=VAL_SAMPLES, batch_size=64,
+                  trainer_provider=opt_trainer_provider,
+                  datasets_provider=opt_datasets_provider,
+                  prompt=OPT_PROMPT, 
+                  project_base_path=project_base_path,
+                  tuned=False),
   }
 
 class TuningConfig:
-  def __init__(self, model_family, model_name, dataset, max_len, epochs,
+  def __init__(self, name, model_family, model_name, dataset, max_len, epochs,
                training_samples, val_samples, batch_size,
                trainer_provider, datasets_provider, prompt, 
-               project_base_path):
-
+               project_base_path, tuned):
+    self.name = name
     self.model_family = model_family
     self.model_name = model_name
     self.dataset = dataset
@@ -79,6 +93,7 @@ class TuningConfig:
     self.trainer_provider = trainer_provider
     self.datasets_provider = datasets_provider
     self.prompt = prompt
+    self.tuned = tuned
     
 class T5Inferencer:
   def __init__(self, device, model, tokenizer, prompt='', max_new_tokens=100, tensor_type='pt', num_beams=3):
