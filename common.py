@@ -1,4 +1,4 @@
-__version__='1.3'
+__version__='1.4'
 SEED = 42
 MAIN_DATA_FILE_FORMAT = '{}data/posptproc_corpus_spacy_{}.csv' #needs base path and dataset
 TRAIN_VAL_FILE_FORMAT = '{}data/posptproc_corpus_spacy_{}_train_val.csv' #needs base path and dataset
@@ -45,7 +45,15 @@ def create_configs(project_base_path, t5_trainer_provider, t5_datasets_provider,
                   trainer_provider=opt_trainer_provider,
                   datasets_provider=opt_datasets_provider,
                   prompt=OPT_PROMPT, 
-                  project_base_path=project_base_path)
+                  project_base_path=project_base_path),
+      'opt_s3': TuningConfig('opt', 'facebook/opt-350m', 
+                  dataset='s3', max_len=150, epochs=3, 
+                  training_samples=TRAINING_SAMPLES,
+                  val_samples=VAL_SAMPLES, batch_size=64,
+                  trainer_provider=opt_trainer_provider,
+                  datasets_provider=opt_datasets_provider,
+                  prompt=OPT_PROMPT, 
+                  project_base_path=project_base_path),
   }
 
 class TuningConfig:
@@ -72,3 +80,52 @@ class TuningConfig:
     self.datasets_provider = datasets_provider
     self.prompt = prompt
     
+class T5Inferencer:
+  def __init__(self, device, model, tokenizer, prompt='', max_new_tokens=100, tensor_type='pt', num_beams=3):
+    self.model = model
+    self.tokenizer = tokenizer
+    self.prompt = prompt
+    self.max_new_tokens = max_new_tokens
+    self.tensor_type = tensor_type
+    self.num_beams = num_beams
+    self.device = device
+
+  def __call__(self, context_lines):
+    test_inputs = self.tokenizer([self.prompt + ' '.join(context_lines)], return_tensors=self.tensor_type)
+    test_output_ids = self.model.generate(
+        test_inputs['input_ids'].to(self.device),
+        num_beams=self.num_beams,
+        no_repeat_ngram_size=2,
+        num_return_sequences=self.num_beams,
+        max_new_tokens=self.max_new_tokens,
+        do_sample=True,
+        temperature=0.9,
+        top_p=0.95,
+        top_k=0)
+    decoded = [self.tokenizer.decode(out_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False) for out_ids in test_output_ids]
+    return decoded
+
+class OptInferencer:
+  def __init__(self, device, model, tokenizer, max_new_tokens=50, tensor_type='pt', num_beams=3):
+    self.model = model
+    self.tokenizer = tokenizer
+    self.max_new_tokens = max_new_tokens
+    self.tensor_type = tensor_type
+    self.num_beams = num_beams
+    self.device = device
+
+  def __call__(self, context_lines):
+    test_inputs = self.tokenizer([' '.join(context_lines)], return_tensors=self.tensor_type)
+
+    test_output_ids = self.model.generate(
+      test_inputs['input_ids'].to(self.device),
+      num_beams=self.num_beams,
+      no_repeat_ngram_size=2,
+      num_return_sequences=self.num_beams,
+      max_length = self.max_new_tokens,
+      do_sample=True,
+      top_k=0,
+      early_stopping=True
+    )
+    decoded = [self.tokenizer.decode(out_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False).replace('\n', ' ') for out_ids in test_output_ids]
+    return decoded
