@@ -4,6 +4,8 @@ MAIN_DATA_FILE_FORMAT = '{}data/posptproc_corpus_spacy_{}.csv' #needs base path 
 TRAIN_VAL_FILE_FORMAT = '{}data/posptproc_corpus_spacy_{}_train_val.csv' #needs base path and dataset
 TEST_FILE_FORMAT = '{}data/posptproc_corpus_spacy_{}_test.csv' #needs basepath and dataset
 SAVED_MODEL_PATH_FORMAT = '{}saved_models/final/{}' # needs base path, model name
+ANNOTATION_PACKAGE_PATH_FORMAT = '{}annotation_input.csv'
+ANNOTATION_WITH_BEST_PATH_FORMAT = '{}annotation_input_with_bib.csv'
 VALID_MODEL_FAMILIES = set(['t5', 'opt'])
 VALID_DATASETS = set(['s1', 's2', 's3'])
 T5_PROMPT = 'Generate next line: '
@@ -12,6 +14,12 @@ B2B_PROMPT = ''
 CHECKPOINTS_TO_SAVE = 1
 TRAINING_SAMPLES = -1
 VAL_SAMPLES = 10000
+
+def annotation_input_loc(project_base_path):
+  return ANNOTATION_PACKAGE_PATH_FORMAT.format(project_base_path)
+  
+def annotation_with_best_loc(project_base_path):
+  return ANNOTATION_WITH_BEST_PATH_FORMAT.format(project_base_path)
 
 def create_configs(project_base_path, 
     t5_trainer_provider=None, t5_datasets_provider=None, 
