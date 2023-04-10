@@ -121,7 +121,7 @@ def create_configs(project_base_path,
                   val_samples=VAL_SAMPLES, batch_size=64,
                   trainer_provider=opt_trainer_provider,
                   datasets_provider=opt_datasets_provider,
-                  prompt='Continue the next sentence of the story making the language appropriate for kids between 6 and 12 years old: ', 
+                  prompt=OPT_PROMPT, 
                   project_base_path=project_base_path,
                   tuned=False),
   }
