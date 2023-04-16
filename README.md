@@ -14,7 +14,7 @@ The goal for this project is to develop an NLP sentence continuation model that 
 
 ## Repo Folders:
 ### -   Data: 
-- Raw data file for the <a ref="https://www.kaggle.com/datasets/edenbd/children-stories-text-corpus">Children Stories Text Corpus</a>
+- Raw data file for the <a href="https://www.kaggle.com/datasets/edenbd/children-stories-text-corpus">Children Stories Text Corpus</a>
 - The data processing Jupyter notebook
 - The processed S1, S2 and S3 datasets (inside a 7zip given its large size)
 ### -   Fine-tuning: 
