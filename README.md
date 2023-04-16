@@ -8,6 +8,8 @@ Repository for the final project for MIDS W266: Natural Language Processing with
 
 The goal for this project is to develop an NLP sentence continuation model that will enable an eventual interactive story development experience for children, in order to make the activity more accessible while reducing the burden on childcare providers. This system takes in the last few sentences of a story as an input, and generates the next sentence while staying on topic.
 
+<a href="https://docs.google.com/presentation/d/1omxUU91ZXW47QygvzZoxBZUsqPzz1QJyix97pT2D8Bo/edit#slide=id.g2189013d091_0_233">View Final Presentation Slides</a>
+
 <br>
 
 ## Repo Folders:
